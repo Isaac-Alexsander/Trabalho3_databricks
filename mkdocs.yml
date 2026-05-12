@@ -1,0 +1,103 @@
+site_name: "Trabalho 3 — Lakehouse Databricks & Arquitetura Medalhão"
+site_description: "Pipeline de dados com Databricks, Delta Lake e Arquitetura Medalhão (Landing → Bronze → Silver → Gold)"
+site_author: "Isaac Alexsander Pereira Pessoa"
+site_url: "https://Isaac-Alexsander.github.io/trabalho3_databricks/"
+
+repo_name: "Isaac-Alexsander/trabalho3_databricks"
+repo_url: "https://github.com/Isaac-Alexsander/trabalho3_databricks"
+edit_uri: "edit/main/docs/"
+
+theme:
+  name: material
+  language: pt
+  palette:
+    - scheme: slate
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Modo claro
+    - scheme: default
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Modo escuro
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/database-arrow-right
+
+nav:
+  - 🏠 Início: index.md
+  - 🏛️ Arquitetura Medalhão: arquitetura.md
+  - ⚙️ Configuração Databricks: databricks.md
+  - 🔄 Pipeline Detalhado: pipeline.md
+  - 🥇 Modelagem Gold (Kimball): gold_kimball.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - tables
+
+plugins:
+  - search:
+      lang: pt
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Isaac-Alexsander
+      name: GitHub — Isaac Alexsander
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: "© 2025 Isaac Alexsander Pereira Pessoa — SATC Engenharia de Software"

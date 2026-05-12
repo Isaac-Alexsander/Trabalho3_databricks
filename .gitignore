@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+.env
+
+# Gerenciadores de pacote
+.uv/
+poetry.lock
+uv.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# MkDocs — site gerado (não commitar)
+site/
+
+# Databricks
+*.dbc
+
+# Dados sensíveis — NUNCA commitar credenciais
+.env.local
+secrets.json
+credentials.json
+*.key
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.bak
+.cache/

@@ -1,0 +1,30 @@
+/* Custom styles — Trabalho 3 Lakehouse Databricks */
+
+:root {
+  --md-primary-fg-color: #FF3621;
+  --md-accent-fg-color:  #FF6B35;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 6px;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+}
+
+/* Badge inline */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: white;
+}
+.badge-landing  { background: #607D8B; }
+.badge-bronze   { background: #CD7F32; }
+.badge-silver   { background: #9E9E9E; }
+.badge-gold     { background: #FFC107; color: #333; }

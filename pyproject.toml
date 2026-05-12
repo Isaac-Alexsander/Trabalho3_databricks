@@ -1,0 +1,20 @@
+[project]
+name = "trabalho3-databricks"
+version = "1.0.0"
+description = "Pipeline Lakehouse com Databricks e Arquitetura Medalhão — Seguro de Veículos"
+authors = [
+    { name = "Isaac Alexsander Pereira Pessoa" }
+]
+requires-python = ">=3.10"
+
+[tool.uv]
+dev-dependencies = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "pymdown-extensions>=10.7",
+]
+
+[tool.uv.scripts]
+docs-serve = "mkdocs serve"
+docs-build = "mkdocs build"
+docs-deploy = "mkdocs gh-deploy --force"
