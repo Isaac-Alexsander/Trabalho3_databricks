@@ -6,7 +6,7 @@
 # MAGIC
 # MAGIC | Parâmetro | Valor |
 # MAGIC |-----------|-------|
-# MAGIC | Origem    | PostgreSQL — Supabase |
+# MAGIC | Origem    | PostgreSQL — Supabase (API REST) |
 # MAGIC | Destino   | Volume `workspace.landing.dados` |
 # MAGIC | Formato   | CSV |
 # MAGIC | Tabelas   | 11 tabelas — Seguro de Veículos |
@@ -14,22 +14,30 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 🔧 1. Configuração JDBC
+# MAGIC ## 🔧 1. Configuração da Conexão Supabase
 # MAGIC ⚠️ **Preencha com suas credenciais do Supabase antes de rodar**
+# MAGIC
+# MAGIC > Usamos a API REST do Supabase via HTTPS porque o Databricks Free Edition
+# MAGIC > (Serverless) bloqueia conexões TCP externas (JDBC).
 
 # COMMAND ----------
 
-SUPABASE_HOST     = "db.iykxjhjcimxnyzvzfnit.supabase.co"
-SUPABASE_PORT     = "6543"
-SUPABASE_DB       = "postgres"
-SUPABASE_USER     = "postgres.iykxjhjcimxnyzvzfnit"
-SUPABASE_PASSWORD = "22300509fF@-1"
+import requests
+from datetime import datetime
+from pyspark.sql import functions as F
 
-JDBC_URL = f"jdbc:postgresql://{SUPABASE_HOST}:{SUPABASE_PORT}/{SUPABASE_DB}?sslmode=require"
+# Credenciais da API REST do Supabase
+SUPABASE_URL = "https://iykxjhjcimxnyzvzfnit.supabase.co"
+SUPABASE_KEY = "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5a3hqaGpjaW14bnl6dnpmbml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDU4OTcsImV4cCI6MjA5NDE4MTg5N30.VHypg3WxI1vxeeD0TSv9SzPtTc95ahdgnIr5aeqHzhk"  # Project Settings → API Keys → anon public
 
-print("✅ Parâmetros JDBC configurados.")
-print(f"   Host : {SUPABASE_HOST}")
-print(f"   User : {SUPABASE_USER}")
+HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json"
+}
+
+print("✅ Parâmetros da API Supabase configurados.")
+print(f"   URL: {SUPABASE_URL}")
 
 # COMMAND ----------
 
@@ -60,27 +68,9 @@ for t in TABELAS:
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 🚀 4. Extração: Supabase → CSV no Volume
+# MAGIC ## 🚀 4. Extração: Supabase (API REST) → CSV no Volume
 
 # COMMAND ----------
-
-from datetime import datetime
-from pyspark.sql import functions as F
-
-# Credenciais da API REST do Supabase
-SUPABASE_URL = "https://iykxjhjcimxnyzvzfnit.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5a3hqaGpjaW14bnl6dnpmbml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDU4OTcsImV4cCI6MjA5NDE4MTg5N30.VHypg3WxI1vxeeD0TSv9SzPtTc95ahdgnIr5aeqHzhk"  # veja instruções abaixo
-
-HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json"
-}
-
-TABELAS = [
-    "regiao", "estado", "municipio", "marca", "modelo",
-    "cliente", "endereco", "telefone", "carro", "apolice", "sinistro",
-]
 
 resultados = []
 
@@ -102,7 +92,7 @@ for tabela in TABELAS:
             print(f"   ⚠️ {tabela}: sem dados")
             continue
 
-        # Converte para Spark DataFrame
+        # Converte JSON para Spark DataFrame
         df = spark.createDataFrame(dados)
         total_linhas = df.count()
 
@@ -123,7 +113,7 @@ for tabela in TABELAS:
     except Exception as e:
         resultados.append({"tabela": tabela, "status": "❌ ERRO", "linhas": 0, "erro": str(e)})
         print(f"   ❌ ERRO em {tabela}: {e}")
-        
+
 # COMMAND ----------
 
 # MAGIC %md
