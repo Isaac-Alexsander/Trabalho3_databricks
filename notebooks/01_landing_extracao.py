@@ -20,10 +20,10 @@
 # COMMAND ----------
 
 SUPABASE_HOST     = "db.iykxjhjcimxnyzvzfnit.supabase.co"
-SUPABASE_PORT     = "5432"
+SUPABASE_PORT     = "6543"
 SUPABASE_DB       = "postgres"
 SUPABASE_USER     = "postgres.iykxjhjcimxnyzvzfnit"
-SUPABASE_PASSWORD = "SUA_SENHA_AQUI"
+SUPABASE_PASSWORD = "22300509fF@-1"
 
 JDBC_URL = f"jdbc:postgresql://{SUPABASE_HOST}:{SUPABASE_PORT}/{SUPABASE_DB}?sslmode=require"
 
@@ -65,6 +65,22 @@ for t in TABELAS:
 # COMMAND ----------
 
 from datetime import datetime
+from pyspark.sql import functions as F
+
+# Credenciais da API REST do Supabase
+SUPABASE_URL = "https://iykxjhjcimxnyzvzfnit.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5a3hqaGpjaW14bnl6dnpmbml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDU4OTcsImV4cCI6MjA5NDE4MTg5N30.VHypg3WxI1vxeeD0TSv9SzPtTc95ahdgnIr5aeqHzhk"  # veja instruções abaixo
+
+HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json"
+}
+
+TABELAS = [
+    "regiao", "estado", "municipio", "marca", "modelo",
+    "cliente", "endereco", "telefone", "carro", "apolice", "sinistro",
+]
 
 resultados = []
 
@@ -73,21 +89,25 @@ for tabela in TABELAS:
     print(f"\n⏳ Extraindo: {tabela} ...")
 
     try:
-        df = (
-            spark.read
-            .format("jdbc")
-            .option("url", JDBC_URL)
-            .option("dbtable", f"public.{tabela}")
-            .option("driver", "org.postgresql.Driver")
-            .option("user", SUPABASE_USER)
-            .option("password", SUPABASE_PASSWORD)
-            .option("fetchsize", "10000")
-            .load()
+        # Busca todos os registros via REST API
+        response = requests.get(
+            f"{SUPABASE_URL}/rest/v1/{tabela}",
+            headers=HEADERS,
+            params={"select": "*", "limit": "10000"}
         )
+        response.raise_for_status()
+        dados = response.json()
 
+        if not dados:
+            print(f"   ⚠️ {tabela}: sem dados")
+            continue
+
+        # Converte para Spark DataFrame
+        df = spark.createDataFrame(dados)
         total_linhas = df.count()
-        caminho = f"/Volumes/workspace/landing/dados/{tabela}"
 
+        # Grava como CSV no Volume
+        caminho = f"/Volumes/workspace/landing/dados/{tabela}"
         (
             df.write
             .mode("overwrite")
@@ -103,7 +123,7 @@ for tabela in TABELAS:
     except Exception as e:
         resultados.append({"tabela": tabela, "status": "❌ ERRO", "linhas": 0, "erro": str(e)})
         print(f"   ❌ ERRO em {tabela}: {e}")
-
+        
 # COMMAND ----------
 
 # MAGIC %md
